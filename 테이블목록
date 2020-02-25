@@ -1,0 +1,57 @@
+ALTER TABLE "my_recipe" RENAME TO "my_recipe__old";
+CREATE TABLE "my_recipe" (
+"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+"tag" varchar(255) NOT NULL,
+ "title" varchar(50) NOT NULL,
+  "slug" varchar(50) NOT NULL UNIQUE,
+   "description" varchar(100) NOT NULL,
+    "content" text NOT NULL, "create_date" datetime NOT NULL,
+     "modify_date" datetime NOT NULL, "image" varchar(100) NOT NULL);
+
+
+CREATE TABLE "blog_bookmark" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+ "recipe_id" integer NOT NULL REFERENCES "my_recipe" ("id") DEFERRABLE INITIALLY DEFERRED,
+  "title" varchar(100) NULL,
+   "url" varchar(200) NOT NULL UNIQUE);
+
+
+CREATE TABLE "my_basic" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+"image" varchar(100) NOT NULL,
+ "title" varchar(50) NOT NULL,
+  "slug" varchar(50) NOT NULL UNIQUE,
+   "description" varchar(100) NOT NULL, 
+   "content" text NOT NULL, 
+   "create_date" datetime NOT NULL,
+    "modify_date" datetime NOT NULL);
+
+CREATE TABLE "review_album" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+ "owner_id" integer NOT NULL REFERENCES "auth_user" ("id") DEFERRABLE INITIALLY DEFERRED, 
+ "name" varchar(50) NOT NULL,
+  "description" varchar(100) NOT NULL);
+
+CREATE TABLE "review_photo" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+ "title" varchar(50) NOT NULL,
+  "image" varchar(100) NOT NULL,
+   "description" text NOT NULL,
+    "upload_date" datetime NOT NULL,
+     "album_id" integer NOT NULL REFERENCES "review_album" ("id") DEFERRABLE INITIALLY DEFERRED);
+CREATE INDEX "review_photo_album_id_532746bd" ON "review_photo" ("album_id");
+COMMIT;
+
+CREATE TABLE IF NOT EXISTS "auth_user" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+ "password" varchar(128) NOT NULL,
+  "last_login" datetime NULL,
+   "is_superuser" bool NOT NULL, 
+  "username" varchar(150) NOT NULL UNIQUE, 
+  "first_name" varchar(30) NOT NULL, "email" varchar(254) NOT NULL,
+   "is_staff" bool NOT NULL, "is_active" bool NOT NULL,
+    "date_joined" datetime NOT NULL, "last_name" varchar(150) NOT NULL);
+
+ CREATE TABLE IF NOT EXISTS "tagging_taggeditem" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "object_id" integer unsigned NOT NULL,
+  "content_type_id" integer NOT NULL REFERENCES "django_content_type" ("id") DEFERRABLE INITIALLY DEFERRED,
+   "tag_id" integer NOT NULL REFERENCES "tagging_tag" ("id") DEFERRABLE INITIALLY DEFERRED);
+
+CREATE TABLE IF NOT EXISTS "tagging_tag" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(50) NOT NULL UNIQUE);
+
+CREATE TABLE IF NOT EXISTS "django_content_type" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+ "app_label" varchar(100) NOT NULL, "model" varchar(100) NOT NULL);
